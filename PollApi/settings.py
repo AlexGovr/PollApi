@@ -11,9 +11,13 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from config import DJ_SECRET_KEY, DJ_DEBUG, DJ_HOSTS
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+DEBUG = DJ_DEBUG
+ALLOWED_HOSTS = DJ_HOSTS
+SECRET_KEY = DJ_SECRET_KEY
 
 
 # Quick-start development settings - unsuitable for production
@@ -37,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
