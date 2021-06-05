@@ -6,8 +6,8 @@ from polls.views import PollViewSet, QuestionViewSet, FinishedPollViewSet, Answe
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'poll', PollViewSet)
 router.register(r'question', QuestionViewSet)
-router.register(r'mypolls', FinishedPollViewSet)
-router.register(r'answers', AnswerViewSet)
+router.register(r'finished_poll', FinishedPollViewSet)
+router.register(r'answer', AnswerViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
