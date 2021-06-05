@@ -19,7 +19,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class FinishedPollSerializer(serializers.ModelSerializer):
-    answers = serializers.StringRelatedField(many=True)
+    answers = serializers.StringRelatedField(many=True, read_only=True)
     class Meta:
         model = FinishedPoll
         fields = ['user_id', 'poll', 'id', 'answers']
