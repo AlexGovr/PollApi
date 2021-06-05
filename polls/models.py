@@ -24,8 +24,8 @@ class QuestionChoice(models.Model):
 
 class Poll(models.Model):
     name = models.CharField(default='NoName', null=True, max_length=80)
-    date_start = models.DateTimeField(default=datetime.now, blank=True, editable=False)
-    date_end = models.DateTimeField(blank=True)
+    date_start = models.DateField(default=datetime.today, blank=True, editable=False)
+    date_end = models.DateField(blank=True)
     description = models.CharField(default='', null=True, max_length=80)
     questions = models.ManyToManyField(Question, blank=True)
 
