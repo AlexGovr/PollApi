@@ -17,6 +17,11 @@ class Question(models.Model):
         return f'{self.question_type}: {self.text}'
 
 
+class QuestionChoice(models.Model):
+    text = models.CharField(default='', null=True, max_length=120)
+    question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
+
+
 class Poll(models.Model):
     name = models.CharField(default='NoName', null=True, max_length=80)
     date_start = models.DateTimeField(default=datetime.now, blank=True, editable=False)
