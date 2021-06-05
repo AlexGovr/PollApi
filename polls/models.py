@@ -44,7 +44,7 @@ class FinishedPoll(models.Model):
 class Answer(models.Model):
     question = models.ForeignKey(Question, blank=True, on_delete=models.CASCADE)
     finished_poll = models.ForeignKey(FinishedPoll, related_name='answers', blank=True, on_delete=models.CASCADE)
-    text = models.CharField(default='', null=True, max_length=360)
+    text = models.CharField(null=False, blank=False, max_length=360)
 
     def __str__(self):
         return f'question_id: {self.question.id}, finished_poll_id: {self.finished_poll.id}, text: {self.text}'
