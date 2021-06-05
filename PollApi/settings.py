@@ -18,20 +18,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = DJ_DEBUG
 ALLOWED_HOSTS = DJ_HOSTS
 SECRET_KEY = DJ_SECRET_KEY
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'e&!)f5iy52n3s=38_acx3pbekyl7r+-2k&mb85-2t*j+hzhq$v'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
