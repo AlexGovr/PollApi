@@ -7,15 +7,14 @@ class PollSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Poll
-        fields = ['name', 'date_start', 'date_end', 'description', 'questions', 'id']
+        fields = ['name', 'date_start', 'date_end', 'description', 'id']
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    choices = serializers.PrimaryKeyRelatedField(many=True, required=False, read_only=True)
 
     class Meta:
         model = Question
-        fields = ['text', 'question_type', 'id', 'choices']
+        fields = ['text', 'question_type', 'id', 'poll']
 
 
 class FinishedPollSerializer(serializers.ModelSerializer):

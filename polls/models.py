@@ -2,6 +2,16 @@ from datetime import date
 from django.db import models
 
 
+class Poll(models.Model):
+    name = models.CharField(default='NoName', null=True, max_length=80)
+    date_start = models.DateField(default=date.today, blank=True)
+    date_end = models.DateField(blank=True)
+    description = models.CharField(default='', null=True, max_length=80)
+
+    def __str__(self):
+        return f'{self.name}: {self.date_start} -- {self.date_end}'
+
+
 class Question(models.Model):
     # type choices
     _TEXT = 'text'
@@ -12,20 +22,10 @@ class Question(models.Model):
                     (_MANY, 'choose one or more answers')]
     text = models.CharField(default='', null=True, max_length=240)
     question_type = models.CharField(choices=TYPE_CHOICES, blank=True, default=_TEXT, max_length=20)
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.question_type}: {self.text}'
-
-
-class Poll(models.Model):
-    name = models.CharField(default='NoName', null=True, max_length=80)
-    date_start = models.DateField(default=date.today, blank=True)
-    date_end = models.DateField(blank=True)
-    description = models.CharField(default='', null=True, max_length=80)
-    questions = models.ManyToManyField(Question, blank=True)
-
-    def __str__(self):
-        return f'{self.name}: {self.date_start} -- {self.date_end}'
 
 
 class FinishedPoll(models.Model):
