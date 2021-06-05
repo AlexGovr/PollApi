@@ -1,4 +1,5 @@
 
+from datetime import date
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -41,6 +42,12 @@ class PollViewSet(BasicViewSet):
         if request.data.get('date_start'):
             return Response({'error': 'date_start field is not editable'}, status=status.HTTP_400_BAD_REQUEST)
         return super().update(request, *args, **kwargs)
+
+    @action(detail=False, url_path='active')
+    def active(self, request, *args, **kwargs):
+        today = date.today()
+        self.queryset = self.queryset.filter(date_start__lte=today, date_end__gte=today)
+        return super().list(request, *args, **kwargs)
 
 
 class QuestionViewSet(BasicViewSet):
