@@ -1,5 +1,5 @@
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import FinishedPoll, Poll, Question, Answer
@@ -36,6 +36,11 @@ class BasicViewSet(viewsets.ModelViewSet):
 class PollViewSet(BasicViewSet):
     queryset = Poll.objects.all().order_by('-date_start', ).reverse()
     serializer_class = PollSerializer
+
+    def update(self, request, *args, **kwargs):
+        if request.data.get('date_start'):
+            return Response({'error': 'date_start field is not editable'}, status=status.HTTP_400_BAD_REQUEST)
+        return super().update(request, *args, **kwargs)
 
 
 class QuestionViewSet(BasicViewSet):
