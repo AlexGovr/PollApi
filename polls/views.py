@@ -60,7 +60,7 @@ class FinishedPollViewSet(viewsets.ModelViewSet):
     queryset = FinishedPoll.objects.none()
     serializer_class = FinishedPollSerializer
 
-    @action(detail=False, url_path='show')
+    @action(detail=False, url_path='show', methods=['POST'])
     def list_mypolls(self, request, *args, **kwargs):
         user_id = request.data.get('id')
         if not user_id:
