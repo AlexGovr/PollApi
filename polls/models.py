@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from django.db import models
 
 
@@ -24,7 +24,7 @@ class QuestionChoice(models.Model):
 
 class Poll(models.Model):
     name = models.CharField(default='NoName', null=True, max_length=80)
-    date_start = models.DateField(default=datetime.today, blank=True, editable=False)
+    date_start = models.DateField(default=date.today, blank=True)
     date_end = models.DateField(blank=True)
     description = models.CharField(default='', null=True, max_length=80)
     questions = models.ManyToManyField(Question, blank=True)
@@ -35,7 +35,6 @@ class Poll(models.Model):
 
 class FinishedPoll(models.Model):
     poll = models.ForeignKey(Poll, blank=True, on_delete=models.CASCADE)
-    # we don't need full user functionality
     user_id = models.IntegerField(blank=True)
 
     def __str__(self):
