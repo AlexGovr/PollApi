@@ -1,5 +1,5 @@
 
-from .models import Poll, Question, FinishedPoll, Answer, QuestionChoice
+from .models import Poll, Question, FinishedPoll, Answer
 from rest_framework import serializers
 
 
@@ -31,9 +31,10 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = ['text', 'question', 'id', 'finished_poll']
 
-
-class QuestionChoiceSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = QuestionChoice
-        fields = ['text', 'question', 'id']
+    def create(self, validated_data):
+        print(validated_data)
+        poll_by_fpoll = validated_data['finished_poll'].poll
+        poll_by_question = validated_data['question'].poll
+        if poll_by_fpoll is not poll_by_question:
+            raise serializers.ValidationError("question's and finished_poll's poll_id value must be the same")
+        return super().create(validated_data)

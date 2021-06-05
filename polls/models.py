@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Question(models.Model):
-    #choices
+    # type choices
     _TEXT = 'text'
     _ONE = 'choose_one'
     _MANY = 'choose_many'
@@ -15,11 +15,6 @@ class Question(models.Model):
 
     def __str__(self):
         return f'{self.question_type}: {self.text}'
-
-
-class QuestionChoice(models.Model):
-    text = models.CharField(default='', null=True, max_length=120)
-    question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
 
 
 class Poll(models.Model):
@@ -47,4 +42,4 @@ class Answer(models.Model):
     text = models.CharField(null=False, blank=False, max_length=360)
 
     def __str__(self):
-        return f'question_id: {self.question.id}, finished_poll_id: {self.finished_poll.id}, text: {self.text}'
+        return f'text: {self.text}'
