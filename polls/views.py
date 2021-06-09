@@ -22,10 +22,7 @@ class BasicViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.not_auth_response()
-        try:
-            return super().create(request, *args, **kwargs)
-        except Exception as e:
-            return Response({'error': str(e)})
+        return super().create(request, *args, **kwargs)
 
     def not_auth_response(self):
         return Response({'status': 'rejected: not authenticated'})
@@ -62,7 +59,7 @@ class FinishedPollViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, url_path='show', methods=['POST'])
     def list_mypolls(self, request, *args, **kwargs):
-        user_id = request.data.get('id')
+        user_id = request.data.get('user_id')
         if not user_id:
             return Response({'details': 'user id is needed'})
         self.queryset = FinishedPoll.objects.filter(user_id=user_id)

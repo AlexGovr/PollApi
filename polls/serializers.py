@@ -14,11 +14,12 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ['text', 'question_type', 'id', 'poll']
+        fields = ['text', 'question_type', 'id', 'poll',]
 
 
 class FinishedPollSerializer(serializers.ModelSerializer):
-    answers = serializers.StringRelatedField(many=True, read_only=True)
+    answers = serializers.PrimaryKeyRelatedField(many=True, required=True, queryset=Answer.objects.all())
+
     class Meta:
         model = FinishedPoll
         fields = ['user_id', 'poll', 'id', 'answers']
@@ -31,7 +32,6 @@ class AnswerSerializer(serializers.ModelSerializer):
         fields = ['text', 'question', 'id', 'finished_poll']
 
     def create(self, validated_data):
-        print(validated_data)
         poll_by_fpoll = validated_data['finished_poll'].poll
         poll_by_question = validated_data['question'].poll
         if poll_by_fpoll is not poll_by_question:
