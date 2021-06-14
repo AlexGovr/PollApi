@@ -22,10 +22,15 @@ class Question(models.Model):
                     (_MANY, 'choose one or more answers')]
     text = models.CharField(default='', null=True, max_length=240)
     question_type = models.CharField(choices=TYPE_CHOICES, blank=True, default=_TEXT, max_length=20)
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='questions')
 
     def __str__(self):
         return f'{self.question_type}: {self.text}'
+
+
+class Choice(models.Model):
+    text = models.CharField(max_length=30)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='choices')
 
 
 class FinishedPoll(models.Model):
