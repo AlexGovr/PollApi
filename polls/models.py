@@ -48,3 +48,8 @@ class Answer(models.Model):
 
     def __str__(self):
         return f'text: {self.text}'
+
+
+class AnswerChoice(models.Model):
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='choices')
+    choice = models.ForeignKey(Choice, on_delete=models.CASCADE)

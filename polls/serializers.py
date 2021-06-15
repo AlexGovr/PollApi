@@ -1,10 +1,10 @@
 
-from .models import Poll, Question, FinishedPoll, Answer, Choice
+from .models import Poll, Question, FinishedPoll, Answer, Choice, AnswerChoice
 from rest_framework import serializers
 
 
 class ChoiceSerializer(serializers.ModelSerializer):
-    question = serializers.PrimaryKeyRelatedField(required=False, queryset=Question.objects.all())
+    question = serializers.PrimaryKeyRelatedField(required=False, queryset=Question.objects.none())
     class Meta:
         model = Choice
         fields = ['text', 'question', ]
@@ -12,7 +12,7 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     choices = ChoiceSerializer(many=True, required=False)
-    poll = serializers.PrimaryKeyRelatedField(required=False, queryset=Poll.objects.all())
+    poll = serializers.PrimaryKeyRelatedField(required=False, queryset=Poll.objects.none())
     class Meta:
         model = Question
         fields = ['text', 'question_type', 'id', 'poll', 'choices', ]
@@ -51,15 +51,31 @@ class FinishedPollSerializer(serializers.ModelSerializer):
         fields = ['user_id', 'poll', 'id', 'answers']
 
 
-class AnswerSerializer(serializers.ModelSerializer):
+class AnswerChoiceSerializer(serializers.ModelSerializer):
+    answer = serializers.PrimaryKeyRelatedField(required=False, queryset=Answer.objects.none())
+    class Meta:
+        model = Choice
+        fields = ['answer', 'choice', ]
 
+
+class AnswerSerializer(serializers.ModelSerializer):
+    # choices = AnswerChoiceSerializer(many=True)
+    choices = serializers.PrimaryKeyRelatedField(many=True, queryset=AnswerChoice.objects.all())
     class Meta:
         model = Answer
-        fields = ['text', 'question', 'id', 'finished_poll']
+        fields = ['text', 'question', 'id', 'finished_poll', 'choices', ]
 
-    def create(self, validated_data):
-        poll_by_fpoll = validated_data['finished_poll'].poll
-        poll_by_question = validated_data['question'].poll
-        if poll_by_fpoll is not poll_by_question:
-            raise serializers.ValidationError("question's and finished_poll's poll_id value must be the same")
-        return super().create(validated_data)
+    # def create(self, validated_data):
+    #     poll_by_fpoll = validated_data['finished_poll'].poll
+    #     poll_by_question = validated_data['question'].poll
+    #     if poll_by_fpoll is not poll_by_question:
+    #         raise serializers.ValidationError("question's and finished_poll's poll_id value must be the same")
+        
+    #     if answer.question.question_type in (Question._ONE, Question._MANY):
+    #         choices_data = validated_data.pop('choices')
+    #         answer = super().create(validated_data)
+    #         for ch in choices_data:
+    #             AnswerChoiceSerializer.create(**ch, 'answer': answer)
+    #     else:
+    #         answer = super().create(validated_data)
+    #     return answer
