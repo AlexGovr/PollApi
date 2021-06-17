@@ -42,14 +42,10 @@ class FinishedPoll(models.Model):
 
 
 class Answer(models.Model):
+    text = models.CharField(blank=True, max_length=360)
     question = models.ForeignKey(Question, blank=True, on_delete=models.CASCADE)
     finished_poll = models.ForeignKey(FinishedPoll, related_name='answers', blank=True, on_delete=models.CASCADE)
-    text = models.CharField(null=False, blank=False, max_length=360)
+    choices = models.ManyToManyField(Choice, related_name='answer_choices')
 
     def __str__(self):
         return f'text: {self.text}'
-
-
-class AnswerChoice(models.Model):
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='choices')
-    choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
