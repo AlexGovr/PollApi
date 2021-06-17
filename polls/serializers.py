@@ -1,25 +1,27 @@
 
-from .models import Poll, Question, FinishedPoll, Answer, Choice, AnswerChoice
+from rest_framework.exceptions import ValidationError
+from .models import Poll, Question, FinishedPoll, Answer, Choice
 from rest_framework import serializers
 
 
 class ChoiceSerializer(serializers.ModelSerializer):
-    question = serializers.PrimaryKeyRelatedField(required=False, queryset=Question.objects.none())
     class Meta:
         model = Choice
-        fields = ['text', 'question', ]
+        fields = ['text', 'question', 'id', ]
 
 
 class QuestionSerializer(serializers.ModelSerializer):
     choices = ChoiceSerializer(many=True, required=False)
-    poll = serializers.PrimaryKeyRelatedField(required=False, queryset=Poll.objects.none())
+    # poll = serializers.PrimaryKeyRelatedField(required=False, queryset=Poll.objects.all())
     class Meta:
         model = Question
         fields = ['text', 'question_type', 'id', 'poll', 'choices', ]
     
     def create(self, validated_data):
+        print('here')
         try:
             choices_data = validated_data.pop('choices')
+            print(choices_data)
             question = super().create(validated_data)
             if validated_data.get('question_type', '') in (Question._ONE, Question._MANY):
                 srl = ChoiceSerializer()
@@ -51,31 +53,41 @@ class FinishedPollSerializer(serializers.ModelSerializer):
         fields = ['user_id', 'poll', 'id', 'answers']
 
 
-class AnswerChoiceSerializer(serializers.ModelSerializer):
-    answer = serializers.PrimaryKeyRelatedField(required=False, queryset=Answer.objects.none())
-    class Meta:
-        model = Choice
-        fields = ['answer', 'choice', ]
-
-
 class AnswerSerializer(serializers.ModelSerializer):
     # choices = AnswerChoiceSerializer(many=True)
-    choices = serializers.PrimaryKeyRelatedField(many=True, queryset=AnswerChoice.objects.all())
+    choices = serializers.PrimaryKeyRelatedField(many=True, queryset=Choice.objects.all())
     class Meta:
         model = Answer
         fields = ['text', 'question', 'id', 'finished_poll', 'choices', ]
 
-    # def create(self, validated_data):
-    #     poll_by_fpoll = validated_data['finished_poll'].poll
-    #     poll_by_question = validated_data['question'].poll
-    #     if poll_by_fpoll is not poll_by_question:
-    #         raise serializers.ValidationError("question's and finished_poll's poll_id value must be the same")
+    def run_validation(self, data):
+        validated_data = super().run_validation(data=data)
+        question = validated_data['question']
+        text = validated_data['text']
+        choices = validated_data['choices']
+
+        if question.question_type == Question._TEXT:
+            if not text:
+                raise ValidationError({'text': 'this value must not be empty for "text" question_type'})
+            validated_data['choices'] = []
         
-    #     if answer.question.question_type in (Question._ONE, Question._MANY):
-    #         choices_data = validated_data.pop('choices')
-    #         answer = super().create(validated_data)
-    #         for ch in choices_data:
-    #             AnswerChoiceSerializer.create(**ch, 'answer': answer)
-    #     else:
-    #         answer = super().create(validated_data)
-    #     return answer
+        else:
+            if question.question_type == Question._ONE:
+                if len(choices) != 1:
+                    raise ValidationError({'choices': 'there must be exactly one '
+                                                    'choice for "choose_one" question_type'})
+                choice_ids = tuple(question.choices.all())
+                if choices[0] not in choice_ids:
+                    raise ValidationError({'choices': 'choice must one of question.choices ids'})
+
+            if question.question_type == Question._MANY:
+                if len(choices) == 0:
+                    raise ValidationError({'choices': 'there must be at least one '
+                                                    'choice for "choose_many" question_type'})
+                choice_ids_set = set(question.choices.all())
+                if set(choices) - choice_ids_set:
+                    raise ValidationError({'choices': 'choices must form a subset of question.choices ids'})
+            
+            validated_data['text'] = ''
+
+        return validated_data
